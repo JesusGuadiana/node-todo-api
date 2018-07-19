@@ -24,10 +24,10 @@ MongoClient.connect("mongodb://localhost:27017/TodoApp", (err, db) => {
     location:"Monterrey"
   }, (err, result) => {
     if(err){
-      return console.log("Could not inser user", err);
+      return console.log("Could not insert user", err);
     }
     console.log(result.ops[0]._id.getTimestamp());
   });
-  
+
   db.close();
 });
