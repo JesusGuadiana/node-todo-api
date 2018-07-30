@@ -4,9 +4,17 @@ const request = require("supertest");
 const {app} = require("./../server");
 const {Todo} = require("./../models/todo");
 
+const todos = [{
+  text:'First test todo'
+}, {
+  text:'Second test todo'
+}];
+
 //Clear the DB before the tests
 beforeEach((done) => {
-  Todo.remove({}).then(() => done());
+  Todo.remove({}).then(() => {
+    return Todo.insertMany(todos);
+  }).then(() => done());
 });
 
 describe("POST / todos", () => {
@@ -25,7 +33,7 @@ describe("POST / todos", () => {
           return done(err);
         }
         //Fetch all the todos in the DB and check its lenght to be 1 (Newly created TODO)
-        Todo.find().then((todos) => {
+        Todo.find({text}).then((todos) => {
           expect(todos.length).toBe(1);
           expect(todos[0].text).toBe(text);
           done();
@@ -46,8 +54,20 @@ it("Should not create todo with invalid body data", (done) => {
       }
       //Fetch all the TODOS and expect the lenght to be 0 (Invalid TODO so its not inserted into the DB)
       Todo.find().then((todos) => {
-        expect(todos.length).toBe(0);
+        expect(todos.length).toBe(2);
         done();
       }).catch((e) => done(e));
     });
+});
+
+describe("GET /todos", () => {
+  it("Should get all Todos", (done) => {
+    request(app)
+      .get("/todos")
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todos.length).toBe(2)
+      })
+      .end(done);
+  });
 });
