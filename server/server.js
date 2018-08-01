@@ -34,20 +34,20 @@ app.post("/todos", (req, res) => {
       res.status(400).send(e);
     });
   });
-
+  //Get a speccific todo
   app.get("/todos/:id", (req,res) => {
     var id = req.params.id;
-
+    //Check if the id structure is valid
     if(!ObjectID.isValid(id)){
       return res.status(404).send();
     }
-
+    //Find the TODO
     Todo.findById(id).then((todo) => {
       if(!todo){
         return res.status(404).send();
       }
-
       res.send(todo);
+      //In case of an error return a status code of 400
     }).catch((e) => res.status(400).send());
   });
 
